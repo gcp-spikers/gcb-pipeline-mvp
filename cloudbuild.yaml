@@ -12,7 +12,6 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   entrypoint: 'sh'
   dir: 'build'
-  # args: ['build', '-t', 'gcr.io/$PROJECT_ID/pipeline-product:latest', 'Dockerfile.build']
   args:
     - -c
     - |
@@ -21,6 +20,7 @@ steps:
 
       echo ==== SUBSTITUTIONS ====
       echo _REPO_URL: $_REPO_URL
+      echo _SHOULD_RUN_IMAGE: $_SHOULD_RUN_IMAGE
       echo PROJECT_ID: $PROJECT_ID
       echo BUILD_ID: $BUILD_ID
       echo COMMIT_SHA: $COMMIT_SHA
@@ -43,10 +43,11 @@ steps:
   args:
     - -c
     - |
-      if [[ -z "$_SHOULD_RUN_IMAGE" ]]; then
+      # ash isn't handling the square brackets here, more research needed
+      # if [[ "$_SHOULD_RUN_IMAGE" != '' ]]; then
         echo ==== RUNNING IMAGE ====
         docker run -d -p 80:8000 gcr.io/$PROJECT_ID/pipeline-product:latest
-      fi
+      # fi
 
 #
 # VARIABLE SUBSTITUTIONS
