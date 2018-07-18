@@ -1,0 +1,56 @@
+steps:
+
+#
+# Shallow clone repository specified by `_REPO_URL` substitution into ./build
+#
+- name: 'gcr.io/cloud-builders/git'
+  args: ['clone', '$_REPO_URL', 'build']
+
+#
+# Build and tag the Docker image
+#
+- name: 'gcr.io/cloud-builders/docker'
+  entrypoint: 'sh'
+  dir: 'build'
+  # args: ['build', '-t', 'gcr.io/$PROJECT_ID/pipeline-product:latest', 'Dockerfile.build']
+  args:
+    - -c
+    - |
+      pwd
+      ls -al
+
+      echo ==== SUBSTITUTIONS ====
+      echo _REPO_URL: $_REPO_URL
+      echo PROJECT_ID: $PROJECT_ID
+      echo BUILD_ID: $BUILD_ID
+      echo COMMIT_SHA: $COMMIT_SHA
+      echo SHORT_SHA: $SHORT_SHA
+      echo REPO_NAME: $REPO_NAME
+      echo BRANCH_NAME: $BRANCH_NAME
+      echo TAG_NAME: $TAG_NAME
+      echo REVISION_ID: $REVISION_ID
+
+      echo ==== BUILDING ====
+      docker build -t gcr.io/$PROJECT_ID/pipeline-product:latest .
+
+# TEMPORARY STEP ONLY
+#
+# Runs the resulting image
+#
+- name: 'gcr.io/cloud-builders/docker'
+  entrypoint: 'sh'
+  dir: 'build'
+  args:
+    - -c
+    - |
+      if [[ -z "$_SHOULD_RUN_IMAGE" ]]; then
+        echo ==== RUNNING IMAGE ====
+        docker run -d -p 80:8000 gcr.io/$PROJECT_ID/pipeline-product:latest
+      fi
+
+#
+# VARIABLE SUBSTITUTIONS
+#
+substitutions:
+  _REPO_URL: '** use --substitutions _REPO_URL=https://your.repo/here.git **'
+  _SHOULD_RUN_IMAGE: ''
