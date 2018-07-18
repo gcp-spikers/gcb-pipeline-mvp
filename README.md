@@ -16,7 +16,8 @@ And set your project to match GCP configuration, where `[PROJECT_ID]` is your GC
 
 ### Running pipeline
 
-    gcloud container builds .
+    gcloud container builds submit \
+    --tag gcr.io/[PROJECT_ID]/pipeline-product:latest .
 
 
 ### Running pipeline locally
@@ -34,7 +35,7 @@ You need `container-builder-local` installed, and will need to provide some envi
 - `_SHOULD_RUN_IMAGE`
     Activates an optional step which runs the resulting image(defaults to false) 
 
-#### Example command
+#### Example invocation
 
         PROJECT_ID=[PROJECT_ID] \
         REPO_URL="https://github.com/crccheck/docker-hello-world.git" \
